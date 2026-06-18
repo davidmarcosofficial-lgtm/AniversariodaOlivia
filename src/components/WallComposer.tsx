@@ -123,7 +123,7 @@ export default function WallComposer({ settings, onPostCreated }: WallComposerPr
                   onClick={() => fileInputRef.current?.click()}
                   className="px-3.5 py-1.5 border border-dashed rounded-xl border-gray-300 text-[10px] sm:text-xs font-bold text-gray-400 hover:text-emerald-700 hover:border-emerald-700 cursor-pointer flex items-center gap-1 transition-all"
                 >
-                  <Image size={14} /> Anexar Foto
+                  <Image size={14} /> Me mande uma foto nossa para recordar :)
                 </button>
               ) : (
                 <div className="relative inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 p-1 px-2.5 rounded-lg text-xs font-bold">
