@@ -1,0 +1,6 @@
+{
+  "name": "Convite Digital Infantil - Bosque Encantado",
+  "description": "Um convite digital interativo para aniversário infantil com confirmação de presença, mural de carinho e painel de controle completo para administração.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
