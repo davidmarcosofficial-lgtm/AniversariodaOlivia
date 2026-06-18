@@ -1,48 +1,57 @@
-/**
- * Admin authentication client-side helpers
- */
+import { supabase, isSupabaseConfigured } from './supabase';
 
 export const adminAuth = {
-  // Login method that makes a secure server HTTP request
   async login(username: string, password: string): Promise<{ success: boolean; message?: string }> {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+      if (!isSupabaseConfigured || !supabase) {
+        return {
+          success: false,
+          message: 'Supabase não está configurado corretamente.'
+        };
+      }
+
+      const email = username.trim().toLowerCase();
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        sessionStorage.setItem('bosque_admin_logged_in', 'true');
-        sessionStorage.setItem('bosque_admin_username', data.username || 'Admin');
-        sessionStorage.setItem('bosque_admin_token', data.token);
-        return { success: true };
-      } else {
-        return { success: false, message: data.message || 'Credenciais inválidas.' };
+      if (error || !data.session) {
+        return {
+          success: false,
+          message: 'E-mail ou senha incorretos.'
+        };
       }
+
+      sessionStorage.setItem('bosque_admin_logged_in', 'true');
+      sessionStorage.setItem('bosque_admin_username', data.user.email || 'Admin');
+      sessionStorage.setItem('bosque_admin_token', data.session.access_token);
+
+      return { success: true };
     } catch (err) {
       console.error('Login error:', err);
-      return { success: false, message: 'Ocorreu um erro ao comunicar com o servidor.' };
+      return {
+        success: false,
+        message: 'Ocorreu um erro ao comunicar com o Supabase.'
+      };
     }
   },
 
-  // Check login state
   isAuthenticated(): boolean {
     return sessionStorage.getItem('bosque_admin_logged_in') === 'true';
   },
 
-  // Logout method
-  logout(): void {
+  async logout(): Promise<void> {
     sessionStorage.removeItem('bosque_admin_logged_in');
     sessionStorage.removeItem('bosque_admin_username');
     sessionStorage.removeItem('bosque_admin_token');
+
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
   },
 
-  // Retrieve logged-in administrator name
   getUsername(): string {
     return sessionStorage.getItem('bosque_admin_username') || 'Administrador';
   }
